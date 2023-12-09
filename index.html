@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Stopwatch </title>
+    <style>
+        body{
+            
+            background-color: burlywood;
+        }
+        .box{
+            display: flex;
+        }
+        .stopwatch{
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            line-height: 60px;
+            width: 250px;
+            height: 250px;
+            border:4px solid rgb(15, 4, 4);
+            border-radius: 163px;
+            margin-left: 583px;
+            text-align: center;
+           
+        }
+        .stopwatch:hover{
+            background-color: rgb(199, 79, 42);
+        }
+       
+        .stop{
+            display:none;
+        }
+        button:hover{
+              background-color:black;
+              color: aliceblue;
+        }
+        .buttons{
+            margin-top: 20px;
+        }
+        .box{
+            margin-top: 60px;
+        }
+        .emoji{
+            margin-left: 700px;
+            animation: heartbeat 2s infinite;
+            width: 0px;
+           
+        }
+        @keyframes heartbeat{
+          0%{
+             transform: scale(1);
+
+         }
+            50% {
+            transform: scale(1.1);
+            
+         }
+        100% {
+         transform: scale(1);
+          }
+}
+
+
+
+    </style>
+</head>
+<body>
+    
+    <div class="emoji">
+        <img src="img.png" class="img">
+    </div>
+    <div class="stopwatch">
+        <div class="box">
+            <div class="hrs" style="font-size: 33px;">00</div>
+            <div class="colon" style="font-size: 33px;">:</div>
+            <div class="min" style="font-size: 33px;">00</div>
+            <div class="colon" style="font-size: 33px;">:</div>
+            <div class="sec" style="font-size: 33px;">00</div>
+            <div class="colon" style="font-size: 33px;">:</div>
+            <div class="ms" style="font-size: 33px;">00</div>
+        </div>
+        <div class="buttons">
+            <button class="start">START</button>
+            <button class="stop"></button>
+            <button class="lap">LAP</button>
+            <button class="reset">RESET</button>
+        </div>
+        <ul id="lapList"></ul>
+    </div>
+   
+</body>
+<script>
+
+let startTimer;
+let hrs = min = sec = ms = 0;
+let lapStartTime;
+let laps=[];
+
+const btnstart = document.querySelector('.start');
+const btnreset = document.querySelector('.reset');
+const btnLap=document.querySelector('.lap');
+const lapList = document.getElementById('lapList');
+
+btnstart.addEventListener('click', () => {
+    if (!startTimer) {
+        StartTime = new Date() - (lapStartTime || 0);
+        startTimer = setInterval(() => {
+            ms += 1;
+            if (ms === 100) {
+                sec += 1;
+                ms = 0;
+            }
+            if (sec === 60) {
+                min += 1;
+                sec = 0;
+            }
+            if(min===60){
+                hrs+=1;
+            }
+            update();
+        }, 10);
+        btnstart.innerText = 'STOP';
+        btnLap.disabled = false;
+        
+    } else {
+        clearInterval(startTimer);
+        startTimer = null;
+        btnstart.innerText = 'START';
+        btnLap.disabled = true;
+    }
+});
+
+btnreset.addEventListener('click', () => {
+    clearInterval(startTimer);
+    startTimer = null;
+    hrs = min = sec = ms = 0;
+    update();
+    btnstart.innerText = 'START';
+    lapStartTime=null;
+    laps=[];
+    btnLap.disabled = true;
+
+});
+btnLap.addEventListener('click',()=>{
+    if(startTimer){
+        
+            const lapTime=new Date() - StartTime;
+            laps.push(formatTime(lapTime));
+            lapStartTime = new Date();
+           displayLaps();
+
+        }
+
+});
+
+function displayLaps(){
+       
+    lapList.innerHTML = '';
+    laps.forEach((lap, index) => {
+        const li = document.createElement('li');
+        li.textContent = `Lap ${index + 1}: ${lap}`;
+        lapList.appendChild(li);
+    });
+
+};
+function formatTime(time){
+    const date = new Date(time);
+    const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+    const milliseconds = date.getMilliseconds().toString().padStart(3, '0');
+    return `${minutes}:${seconds}.${milliseconds}`;
+}
+
+
+
+ function update(){
+       phrs=hrs<10?'0'+hrs:hrs;
+       pmin=min<10?'0'+min:min;
+       psec=sec<10?'0'+sec:sec;
+       pms=ms<10?'0'+ms:ms;
+      document.querySelector('.hrs').innerText=phrs;
+      document.querySelector('.min').innerText=pmin;
+      document.querySelector('.sec').innerText=psec;
+      document.querySelector('.ms').innerText=pms;
+
+
+ }
+    
+
+ </script>
+</html>
